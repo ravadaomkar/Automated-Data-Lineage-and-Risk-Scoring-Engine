@@ -1,6 +1,3 @@
-Based on the repository archive provided for **`Automated_Data_Lineage`**, here is a comprehensive, production-ready `README.md` tailored specifically to the project's codebase, tech stack, and structure.
-
----
 
 # Automated Data Lineage
 
