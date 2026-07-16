@@ -1,15 +1,5 @@
-export interface Metrics {
+import type { z } from "zod";
 
-    throughput: number;
+import type { MetricsSchema } from "@/schemas/metrics";
 
-    processed: number;
-
-    passed: number;
-
-    quarantined: number;
-
-    errorRate: number;
-
-    sla: number;
-
-}
+export type Metrics = z.infer<typeof MetricsSchema>;

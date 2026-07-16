@@ -1,10 +1,5 @@
-import { Metrics } from "./metrics";
-import { Transaction } from "./transaction";
+import type { z } from "zod";
 
-export interface Dashboard {
+import type { DashboardSchema } from "@/schemas/dashboard";
 
-    metrics: Metrics;
-
-    transactions: Transaction[];
-
-}
+export type Dashboard = z.infer<typeof DashboardSchema>;

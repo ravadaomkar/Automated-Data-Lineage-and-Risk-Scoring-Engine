@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { Nav } from "./Nav";
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import type { TransactionStatus } from "@/types/transaction";
 
 const stats = [
   { label: "Audit cycle reduction", value: "88%", detail: "48h → 5.7h reporting turnaround" },
@@ -10,17 +14,42 @@ const stats = [
 ];
 
 const pipeline = [
-  { id: "01", name: "Ingest", detail: "Kafka + Kinesis fan-in, schema-registry pinned", meta: "8,500 tps" },
-  { id: "02", name: "Validate", detail: "223 rule packs · SOX, MiFID II, Basel III", meta: "< 4ms p50" },
-  { id: "03", name: "Isolate", detail: "Bad records routed to quarantine ledger", meta: "12.3% err" },
-  { id: "04", name: "Lineage", detail: "Merkle-chained event log, immutable by policy", meta: "100%" },
-  { id: "05", name: "Attest", detail: "Auditor-ready report generated on write", meta: "5.7h cycle" },
+  {
+    id: "01",
+    name: "Ingest",
+    detail: "Kafka + Kinesis fan-in, schema-registry pinned",
+    meta: "8,500 tps",
+  },
+  {
+    id: "02",
+    name: "Validate",
+    detail: "223 rule packs · SOX, MiFID II, Basel III",
+    meta: "< 4ms p50",
+  },
+  {
+    id: "03",
+    name: "Isolate",
+    detail: "Bad records routed to quarantine ledger",
+    meta: "12.3% err",
+  },
+  {
+    id: "04",
+    name: "Lineage",
+    detail: "Merkle-chained event log, immutable by policy",
+    meta: "100%",
+  },
+  {
+    id: "05",
+    name: "Attest",
+    detail: "Auditor-ready report generated on write",
+    meta: "5.7h cycle",
+  },
 ];
 
 export function Landing() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Nav />
+    <PageContainer>
+      <Navbar />
       <Hero />
       <Ticker />
       <Metrics />
@@ -28,7 +57,7 @@ export function Landing() {
       <Lineage />
       <Compliance />
       <Footer />
-    </div>
+    </PageContainer>
   );
 }
 
@@ -57,9 +86,9 @@ function Hero() {
             <span className="italic text-muted-foreground">speed of ingest.</span>
           </motion.h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Ledgerline replaces 48-hour manual financial reviews with a real-time
-            validation pipeline. Every transaction is checked, lineage-tracked, and
-            auditor-ready the moment it lands — no batch, no drift, no surprises.
+            Ledgerline replaces 48-hour manual financial reviews with a real-time validation
+            pipeline. Every transaction is checked, lineage-tracked, and auditor-ready the moment it
+            lands — no batch, no drift, no surprises.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
@@ -84,7 +113,9 @@ function Hero() {
             ].map(([v, l]) => (
               <div key={l}>
                 <dt className="font-mono text-2xl tracking-tight text-foreground">{v}</dt>
-                <dd className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{l}</dd>
+                <dd className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+                  {l}
+                </dd>
               </div>
             ))}
           </dl>
@@ -96,7 +127,7 @@ function Hero() {
 }
 
 function HeroConsole() {
-  const rows = [
+  const rows: { t: string; id: string; amt: string; status: TransactionStatus; rule: string }[] = [
     { t: "14:22:07.412", id: "TXN-8A19F2", amt: "$248,102.55", status: "PASS", rule: "SOX-402" },
     { t: "14:22:07.418", id: "TXN-8A19F3", amt: "$1,204.00", status: "PASS", rule: "MiFID-II" },
     { t: "14:22:07.421", id: "TXN-8A19F4", amt: "$92,450.00", status: "QUAR", rule: "AML-33" },
@@ -118,7 +149,9 @@ function HeroConsole() {
           <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
           <span className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--warning)" }} />
           <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-          <span className="ml-3 font-mono text-xs text-muted-foreground">ledgerline · validator.stream</span>
+          <span className="ml-3 font-mono text-xs text-muted-foreground">
+            ledgerline · validator.stream
+          </span>
         </div>
         <span className="font-mono text-[10px] uppercase tracking-widest text-primary">● live</span>
       </div>
@@ -142,16 +175,7 @@ function HeroConsole() {
                 <td className="px-4 py-2 text-right">{r.amt}</td>
                 <td className="px-4 py-2 text-muted-foreground">{r.rule}</td>
                 <td className="px-4 py-2 text-right">
-                  <span
-                    className={
-                      "rounded-sm px-1.5 py-0.5 text-[10px] uppercase tracking-widest " +
-                      (r.status === "PASS"
-                        ? "bg-primary/15 text-primary"
-                        : "bg-destructive/15 text-destructive")
-                    }
-                  >
-                    {r.status}
-                  </span>
+                  <StatusBadge status={r.status} />
                 </td>
               </tr>
             ))}
@@ -198,20 +222,24 @@ function Metrics() {
       <div className="mx-auto max-w-7xl px-6 py-24">
         <div className="flex items-end justify-between gap-8">
           <div>
-            <p className="font-mono text-xs uppercase tracking-widest text-primary">// production metrics</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-primary">
+              // production metrics
+            </p>
             <h2 className="mt-3 text-4xl font-medium tracking-tight sm:text-5xl">
               Ninety days in production.
             </h2>
           </div>
           <p className="hidden max-w-sm text-sm text-muted-foreground md:block">
-            Continuous measurement across three regulated business units. Sampled from
-            the immutable lineage log — no synthetic benchmarks.
+            Continuous measurement across three regulated business units. Sampled from the immutable
+            lineage log — no synthetic benchmarks.
           </p>
         </div>
         <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} className="bg-card p-6">
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">{s.label}</div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                {s.label}
+              </div>
               <div className="mt-6 font-mono text-5xl tracking-tighter">{s.value}</div>
               <div className="mt-4 text-sm text-muted-foreground">{s.detail}</div>
             </div>
@@ -227,13 +255,15 @@ function Pipeline() {
     <section id="pipeline" className="border-b border-border/60">
       <div className="mx-auto max-w-7xl px-6 py-24">
         <div className="max-w-2xl">
-          <p className="font-mono text-xs uppercase tracking-widest text-primary">// architecture</p>
+          <p className="font-mono text-xs uppercase tracking-widest text-primary">
+            // architecture
+          </p>
           <h2 className="mt-3 text-4xl font-medium tracking-tight sm:text-5xl">
             Five stages. One immutable trail.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Every transaction flows through the same deterministic path. Each stage
-            emits a Merkle-chained lineage event before the next one begins.
+            Every transaction flows through the same deterministic path. Each stage emits a
+            Merkle-chained lineage event before the next one begins.
           </p>
         </div>
         <div className="mt-14 grid gap-4 lg:grid-cols-5">
@@ -283,9 +313,9 @@ function Lineage() {
             100% immutable, cryptographically anchored.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Every state change writes a signed event to an append-only ledger. Auditors
-            replay history from any block; regulators verify integrity without touching
-            production. No row can be silently altered — ever.
+            Every state change writes a signed event to an append-only ledger. Auditors replay
+            history from any block; regulators verify integrity without touching production. No row
+            can be silently altered — ever.
           </p>
           <ul className="mt-8 space-y-3 text-sm">
             {[
@@ -342,8 +372,8 @@ function Compliance() {
               From weekly firedrill to always-on control.
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Ledgerline collapses the audit loop into the pipeline itself. Compliance
-              teams stop chasing rows and start signing off in real time.
+              Ledgerline collapses the audit loop into the pipeline itself. Compliance teams stop
+              chasing rows and start signing off in real time.
             </p>
             <Link
               to="/console"
@@ -365,18 +395,5 @@ function Compliance() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-6 py-10 text-xs text-muted-foreground sm:flex-row sm:items-center">
-      <div className="font-mono">© 2026 Ledgerline Systems · Built Feb 2026</div>
-      <div className="flex gap-6 font-mono uppercase tracking-widest">
-        <a href="#" className="transition hover:text-foreground">Docs</a>
-        <a href="#" className="transition hover:text-foreground">Security</a>
-        <a href="#" className="transition hover:text-foreground">Status · 99.99</a>
-      </div>
-    </footer>
   );
 }
